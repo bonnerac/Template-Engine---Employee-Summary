@@ -51,7 +51,7 @@ const collectInputs = async (inputs = []) => {
         {
             type: 'confirm',
             name: 'again',
-            message: 'Enter another employee? ',
+            message: 'Enter another employee?',
             default: true
         }
     ];
@@ -61,9 +61,36 @@ const collectInputs = async (inputs = []) => {
     return again ? collectInputs(newInputs) : newInputs;
 };
 
-const main = async () => {
+const writeHTML = async () => {
     const inputs = await collectInputs();
-    console.log(inputs);
+    for (i = 0; i < inputs.length; i++) {
+        console.log(inputs[i]);
+        const employeeHTML = `<div class="card">
+        <div class="card-body">
+          ${JSON.stringify(inputs[i])}
+        </div>
+        </div>`
+        const html = `<!DOCTYPE html>
+        <html lang="en">
+        
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+            <title>Document</title>
+        </head>
+        
+        <body>
+            ${employeeHTML}
+        </body>
+        
+        </html>`
+        writeFileAsync("index.html", html)
+    }
+
+
 };
 
-main();
+writeHTML();
