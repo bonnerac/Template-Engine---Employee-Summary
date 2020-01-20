@@ -1,20 +1,27 @@
 var inquirer = require('inquirer');
+const fs = require("fs")
+const util = require("util");
+const writeFileAsync = util.promisify(fs.writeFile);
+// var Employee = require("./lib/Employee");
+// var Engineer = require("./lib/Engineer");
+// var Intern = require("./lib/Intern");
+// var Manager = require("./lib/Manager");
 
-inquirer
-    .prompt([
+const collectInputs = async (inputs = []) => {
+    const prompts = [
         {
             type: "input",
-            message: "What is your name?",
+            message: "What is the employee's name?",
             name: "employeeName"
         },
         {
             type: "input",
-            message: "What is your id number?",
+            message: "What is the employee's id number?",
             name: "idNumber"
         },
         {
             type: "list",
-            message: "What is your job title?",
+            message: "What is the employee's job title?",
             name: "jobTitle",
             choices: [
                 "Employee",
@@ -22,41 +29,41 @@ inquirer
                 "Engineer",
                 "Intern"
             ]
+        },
+        {
+            type: 'input',
+            name: 'officeNumber',
+            message: "Enter the manager's office number:",
+            when: (answers) => answers.jobTitle === 'Manager'
+        },
+        {
+            type: "input",
+            message: "What school does/did the intern attend?",
+            name: "school",
+            when: (answers) => answers.jobTitle === 'Intern'
+        },
+        {
+            type: "input",
+            message: "What is the engineer's GitHub username?",
+            name: "githubUsername",
+            when: (answers) => answers.jobTitle === 'Engineer'
+        },
+        {
+            type: 'confirm',
+            name: 'again',
+            message: 'Enter another employee? ',
+            default: true
         }
-    ])
-    .then(function (response) {
-        if (response.jobTitle === "Engineer") {
-            inquirer.prompt([
-                {
-                    type: "input",
-                    message: "What is your GitHub username?",
-                    name: "githubUsername"
-                }
-            ]).then(function (res) {
-                response.githubUsername = res.githubUsername
-                console.log(response)
-            })
-        } else if (response.jobTitle === "Manager") {
-            inquirer.prompt([
-                {
-                    type: "input",
-                    message: "What is your Office Number?",
-                    name: "officeNumber"
-                }
-            ]).then(function (res) {
-                response.officeNumber = res.officeNumber
-                console.log(response)
-            })
-        } else if (response.jobTitle === "Intern") {
-            inquirer.prompt([
-                {
-                    type: "input",
-                    message: "What school do/did you attend?",
-                    name: "school"
-                }
-            ]).then(function (res) {
-                response.school = res.school
-                console.log(response)
-            })
-        }
-    });
+    ];
+
+    const { again, ...answers } = await inquirer.prompt(prompts);
+    const newInputs = [...inputs, answers];
+    return again ? collectInputs(newInputs) : newInputs;
+};
+
+const main = async () => {
+    const inputs = await collectInputs();
+    console.log(inputs);
+};
+
+main();
